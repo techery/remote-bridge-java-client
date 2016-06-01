@@ -1,0 +1,61 @@
+group 'io.techery'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.6"
+    }
+}
+
+apply plugin: "net.ltgt.apt"
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+sourceSets {
+    aptsrc {
+        java {
+            srcDir 'build/generated/source/apt/main'
+        }
+    }
+}
+
+configurations{
+    aptsrc.extendsFrom main
+}
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    compile 'com.github.techery:janet:1.0.4'
+    compile 'com.github.techery.janet-async:service:1.0.1'
+    apt     'com.github.techery.janet-async:service-compiler:1.0.1'
+    compile 'com.github.techery.janet-converters:gson:1.0.1'
+
+    compile 'org.asynchttpclient:async-http-client:2.0.4'
+
+    //
+    compileOnly 'org.immutables:value:2.2.1'
+    apt 'org.immutables:value:2.2.1'
+    compile 'org.immutables:gson:2.2.1'
+    //
+    compile 'joda-time:joda-time:2.9.3'
+    compile 'com.intellij:annotations:9.0.4'
+
+}
