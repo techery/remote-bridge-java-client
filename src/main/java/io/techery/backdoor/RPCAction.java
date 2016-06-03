@@ -9,7 +9,7 @@ import io.techery.janet.async.annotations.PendingResponse;
 public class RPCAction<T, RT> {
 
     @AsyncAction(value = "response", incoming = true)
-    static class RPCResponseAction<RT> {
+    public static class RPCResponseAction<RT> {
 
         @Payload
         RPCPayload<RT> payload;
@@ -18,7 +18,7 @@ public class RPCAction<T, RT> {
     @PendingResponse(value = ResponseMatcher.class, timeout = 3000)
     RPCResponseAction<RT> responseAction;
 
-    private static class ResponseMatcher implements PendingResponseMatcher<RPCAction, RPCResponseAction> {
+    public static class ResponseMatcher implements PendingResponseMatcher<RPCAction, RPCResponseAction> {
 
         @Override
         public boolean match(RPCAction requestAction, RPCResponseAction response) {
@@ -27,7 +27,7 @@ public class RPCAction<T, RT> {
         }
     }
 
-    private static class RPCPayload<P> {
+    public static class RPCPayload<P> {
         P value;
         String id;
 

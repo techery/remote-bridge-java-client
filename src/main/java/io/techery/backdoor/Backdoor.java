@@ -27,6 +27,6 @@ public class Backdoor {
 
         BlockingObservable<ActionState<GetTimeAction>> actionStateBlockingObservable = pipe.observe().last().toBlocking();
 
-        System.out.print(actionStateBlockingObservable.last().action.params);
+        System.out.print(actionStateBlockingObservable.last().action.getPayload());
     }
 }
