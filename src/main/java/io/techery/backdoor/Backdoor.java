@@ -10,12 +10,10 @@ public class Backdoor {
     public static void main(String [ ] args)
     {
         Backdoor backdoor = new Backdoor();
-
-
     }
 
     public Backdoor() {
-        String url = "ws://appium-rbridge.techery.io/join?id=123";
+        String url = "ws://0.0.0.0:8080/join?id=123";
 
         GsonConverter converter = new GsonConverter(new Gson());
         WebSocketConnection client = new WebSocketConnection();
@@ -25,10 +23,10 @@ public class Backdoor {
 
         ActionPipe<GetTimeAction> pipe = janet.createPipe(GetTimeAction.class);
 
-        pipe.send(new GetTimeAction());
+        pipe.send(new GetTimeAction(new GetTimeAction.Params("george")));
 
         BlockingObservable<ActionState<GetTimeAction>> actionStateBlockingObservable = pipe.observe().last().toBlocking();
 
-        System.out.print(actionStateBlockingObservable.last().action.payload);
+        System.out.print(actionStateBlockingObservable.last().action.params);
     }
 }

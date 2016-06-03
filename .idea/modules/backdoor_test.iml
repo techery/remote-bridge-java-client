@@ -14,7 +14,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="backdoor_main" />
     <orderEntry type="library" name="Gradle: com.github.techery:janet:1.0.4" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.techery.janet-async:service:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.techery.janet-async:service:1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.github.techery.janet-converters:gson:1.0.1" level="project" />
     <orderEntry type="library" name="Gradle: org.asynchttpclient:async-http-client:2.0.4" level="project" />
     <orderEntry type="library" name="Gradle: org.immutables:gson:2.2.1" level="project" />

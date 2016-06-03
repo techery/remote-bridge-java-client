@@ -44,8 +44,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     compile 'com.github.techery:janet:1.0.4'
-    compile 'com.github.techery.janet-async:service:1.0.1'
-    apt     'com.github.techery.janet-async:service-compiler:1.0.1'
+    compile 'com.github.techery.janet-async:service:1.0.2'
+    apt     'com.github.techery.janet-async:service-compiler:1.0.2'
     compile 'com.github.techery.janet-converters:gson:1.0.1'
 
     compile 'org.asynchttpclient:async-http-client:2.0.4'
