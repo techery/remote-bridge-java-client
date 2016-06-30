@@ -46,11 +46,11 @@ public class RemoteBridgeService extends ActionServiceWrapper {
         AsyncClient client = new WebSocketClient(new BridgeMessageParser(gson));
         AsyncProtocol protocol = new AsyncProtocol.Builder()
                 .setTextMessageRule(new BridgeMessageRule(gson))
-                .setResponseMatcher(new BridgeResponseMatcher(gson))
+                .setResponseMatcher(new BridgeResponseMatcher())
                 .build();
         Converter converter = new GsonConverter(gson);
-        AsyncActionService asyncService = new AsyncActionService(url, client, protocol, converter);
-        return new RemoteBridgeService(asyncService);
+        AsyncActionService service = new AsyncActionService(url, client, protocol, converter);
+        return new RemoteBridgeService(service);
     }
 
     private static class BridgeMessageRule implements MessageRule<String> {
@@ -81,19 +81,10 @@ public class RemoteBridgeService extends ActionServiceWrapper {
 
     private static class BridgeResponseMatcher implements ResponseMatcher {
 
-        private final Gson gson;
-
-        private BridgeResponseMatcher(Gson gson) {
-            this.gson = gson;
-        }
-
         @Override
         public boolean match(WaitingAction waitingAction, IncomingMessage incomingMessage) {
-            String id1 = gson.fromJson(waitingAction.getMessage().getDataAsText(), JsonObject.class)
-                    .get(KEY_ID).getAsString();
-            String id2 = gson.fromJson(incomingMessage.getMessage().getDataAsText(), JsonObject.class)
-                    .get(KEY_ID).getAsString();
-            return id1.equals(id2);
+            return waitingAction.getMessage().getEvent()
+                    .equals(incomingMessage.getMessage().getEvent());
         }
     }
 

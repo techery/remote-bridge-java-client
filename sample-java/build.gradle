@@ -9,8 +9,8 @@ compileJava {
 
 dependencies {
 
-    compile project(':lib')
-    apt project(':lib')
+    compile project(':backdoor')
+    apt project(':backdoor')
 
     //
     compileOnly 'org.immutables:value:2.2.1'
