@@ -12,50 +12,10 @@ buildscript {
     }
 }
 
-apply plugin: "net.ltgt.apt"
 
-apply plugin: 'java'
-apply plugin: 'idea'
-
-compileJava {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
-}
-
-sourceSets {
-    aptsrc {
-        java {
-            srcDir 'build/generated/source/apt/main'
-        }
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
     }
-}
-
-configurations{
-    aptsrc.extendsFrom main
-}
-
-repositories {
-    jcenter()
-    maven { url "https://jitpack.io" }
-}
-
-dependencies {
-
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-
-    compile 'com.github.techery:janet:1.0.4'
-    compile 'com.github.techery.janet-async:service:1129254d2e5e2ce77b073068a9cbc40e6d4c64b5'
-    apt     'com.github.techery.janet-async:service-compiler:1129254d2e5e2ce77b073068a9cbc40e6d4c64b5'
-    compile 'com.github.techery.janet-converters:gson:1.0.1'
-
-    compile 'org.asynchttpclient:async-http-client:2.0.4'
-
-    //
-    compileOnly 'org.immutables:value:2.2.1'
-    apt 'org.immutables:value:2.2.1'
-    compile 'org.immutables:gson:2.2.1'
-    //
-    compile 'joda-time:joda-time:2.9.3'
-    compile 'com.intellij:annotations:9.0.4'
-
 }

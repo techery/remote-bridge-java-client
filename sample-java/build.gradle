@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: "net.ltgt.apt"
+
+
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+dependencies {
+
+    compile project(':lib')
+    apt project(':lib')
+
+    //
+    compileOnly 'org.immutables:value:2.2.1'
+    apt 'org.immutables:value:2.2.1'
+    compile 'org.immutables:gson:2.2.1'
+    //
+    compile 'joda-time:joda-time:2.9.3'
+    compile 'com.intellij:annotations:9.0.4'
+}

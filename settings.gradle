@@ -1,2 +1,2 @@
-rootProject.name = 'backdoor'
+include ':lib', ':sample-java'
 

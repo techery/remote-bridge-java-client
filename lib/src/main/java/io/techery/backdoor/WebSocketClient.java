@@ -1,8 +1,5 @@
 package io.techery.backdoor;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import io.techery.janet.AsyncClient;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ws.WebSocket;
@@ -10,31 +7,25 @@ import org.asynchttpclient.ws.WebSocketListener;
 import org.asynchttpclient.ws.WebSocketTextListener;
 import org.asynchttpclient.ws.WebSocketUpgradeHandler;
 
-import java.util.UUID;
+import io.techery.janet.AsyncClient;
+import io.techery.janet.async.model.Message;
 
-public class WebSocketConnection extends AsyncClient {
+class WebSocketClient extends AsyncClient {
 
     public WebSocket websocket;
-    private final Gson gson = new Gson();
-
-    AsyncHttpClient httpClient = new DefaultAsyncHttpClient();
+    private final MessageParser messageParser;
+    private final AsyncHttpClient httpClient = new DefaultAsyncHttpClient();
 
     private WebSocketListener listener = new WebSocketTextListener() {
 
         @Override
         public void onMessage(String message) {
-            JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
-
-            String action = jsonObject.get("action").getAsString();
-            String actionId = jsonObject.get("actionId").getAsString();
-            String payload = gson.toJson(jsonObject.get("response"));
-
-            callback.onMessage(action, payload);
+            callback.onMessage(messageParser.toMessage(message));
         }
 
         @Override
         public void onOpen(WebSocket websocket) {
-            WebSocketConnection.this.websocket = websocket;
+            WebSocketClient.this.websocket = websocket;
             callback.onConnect();
         }
 
@@ -48,6 +39,10 @@ public class WebSocketConnection extends AsyncClient {
             callback.onConnectionError(t);
         }
     };
+
+    public WebSocketClient(MessageParser messageParser) {
+        this.messageParser = messageParser;
+    }
 
     @Override
     protected boolean isConnected() {
@@ -66,9 +61,7 @@ public class WebSocketConnection extends AsyncClient {
         } else {
             WebSocketUpgradeHandler.Builder builder = new WebSocketUpgradeHandler.Builder()
                     .addWebSocketListener(listener);
-
             WebSocketUpgradeHandler handler = builder.build();
-
             httpClient
                     .prepareGet(url)
                     .addHeader("Sec-WebSocket-Protocol", "remote-bridge-protocol")
@@ -81,40 +74,27 @@ public class WebSocketConnection extends AsyncClient {
     protected void disconnect() throws Throwable {
         this.websocket.close();
         this.websocket = null;
-
         callback.onDisconnect("Disconnected");
     }
 
-    private static class Message {
-        String action;
-        String actionId;
-        JsonObject params;
-    }
-
     @Override
-    protected void send(String event, String payload) throws Throwable {
-
-        final Message message = new Message();
-        message.action = event;
-        message.actionId = UUID.randomUUID().toString();
-        message.params = gson.fromJson(payload, JsonObject.class);
-
-        final String jsonMessage = gson.toJson(message);
-
+    protected void send(Message message) throws Throwable {
         if (this.websocket.isOpen()) {
-            this.websocket.sendMessage(jsonMessage);
+            this.websocket.sendMessage(messageParser.toSource(message));
         } else {
             throw new IllegalStateException("Socket is not connected");
         }
     }
 
     @Override
-    protected void send(String event, byte[] payload) throws Throwable {
-
+    protected void subscribe(String event) {
+        //do nothing
     }
 
-    @Override
-    protected void subscribe(String event) {
+    interface MessageParser {
 
+        Message toMessage(String source);
+
+        String toSource(Message message);
     }
 }

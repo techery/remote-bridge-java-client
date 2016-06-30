@@ -1,0 +1,21 @@
+apply plugin: "net.ltgt.apt"
+
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+dependencies {
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    compile 'com.github.techery:janet:1.0.5'
+    compile 'com.github.techery.janet-async:service:b1e5c47b178af10d5d41815c3d668548ef8f0ee5'
+    compile 'com.github.techery.janet-async:service-compiler:b1e5c47b178af10d5d41815c3d668548ef8f0ee5'
+    compile 'com.github.techery.janet-converters:gson:1.0.1'
+
+    compile 'org.asynchttpclient:async-http-client:2.0.4'
+
+}
