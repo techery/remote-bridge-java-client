@@ -10,8 +10,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     compile 'com.github.techery:janet:1.0.5'
-    compile 'com.github.techery.janet-async:service:909235661ff8106ff94b74bf5e23e5412bcd2a02'
-    compile 'com.github.techery.janet-async:service-compiler:909235661ff8106ff94b74bf5e23e5412bcd2a02'
+    compile 'com.github.techery.janet-async:service:65cff8da36f1cef87a3ac2c82e9f8fd6998efe2f'
+    compile 'com.github.techery.janet-async:service-compiler:65cff8da36f1cef87a3ac2c82e9f8fd6998efe2f'
     compile 'com.github.techery.janet-converters:gson:1.0.1'
 
     compile 'org.asynchttpclient:async-http-client:2.0.4'

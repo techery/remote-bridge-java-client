@@ -11,9 +11,8 @@ import io.techery.janet.ActionServiceWrapper;
 import io.techery.janet.AsyncActionService;
 import io.techery.janet.AsyncClient;
 import io.techery.janet.JanetException;
-import io.techery.janet.async.model.IncomingMessage;
 import io.techery.janet.async.model.Message;
-import io.techery.janet.async.model.WaitingAction;
+import io.techery.janet.async.model.ProtocolAction;
 import io.techery.janet.async.protocol.AsyncProtocol;
 import io.techery.janet.async.protocol.MessageRule;
 import io.techery.janet.async.protocol.ResponseMatcher;
@@ -45,7 +44,7 @@ public class RemoteBridgeService extends ActionServiceWrapper {
         Gson gson = new Gson();
         AsyncClient client = new WebSocketClient(new BridgeMessageParser(gson));
         AsyncProtocol protocol = new AsyncProtocol.Builder()
-                .setTextMessageRule(new BridgeMessageRule(gson))
+                .setMessageRule(new BridgeMessageRule(gson))
                 .setResponseMatcher(new BridgeResponseMatcher())
                 .build();
         Converter converter = new GsonConverter(gson);
@@ -53,7 +52,7 @@ public class RemoteBridgeService extends ActionServiceWrapper {
         return new RemoteBridgeService(service);
     }
 
-    private static class BridgeMessageRule implements MessageRule<String> {
+    private static class BridgeMessageRule implements MessageRule {
 
         private final Gson gson;
         private final JsonParser jsonParser;
@@ -64,27 +63,31 @@ public class RemoteBridgeService extends ActionServiceWrapper {
         }
 
         @Override
-        public String handleMessage(Message message) throws Throwable {
-            return gson.fromJson(message.getDataAsText(), JsonObject.class)
-                    .get(KEY_DATA)
-                    .toString();
+        public ProtocolAction handleMessage(Message message) throws Throwable {
+            JsonObject json = gson.fromJson(message.getDataAsText(), JsonObject.class);
+            return ProtocolAction.of(message)
+                    .payload(json.get(KEY_DATA).toString())
+                    .metadata(KEY_ID, json.get(KEY_ID).toString());
         }
 
         @Override
-        public Message createMessage(String event, String payload) throws Throwable {
+        public Message createMessage(ProtocolAction protocolAction) throws Throwable {
+            String messageId = UUID.randomUUID().toString();
             JsonObject json = new JsonObject();
-            json.addProperty(KEY_ID, UUID.randomUUID().toString());
-            json.add(KEY_DATA, jsonParser.parse(payload));
-            return Message.createTextMessage(event, json.toString());
+            json.addProperty(KEY_ID, messageId);
+            json.add(KEY_DATA, jsonParser.parse(protocolAction.getPayloadAsString()));
+            //save message id for response matching
+            protocolAction.metadata(KEY_ID, messageId);
+            return Message.createTextMessage(protocolAction.getEvent(), json.toString());
         }
     }
 
     private static class BridgeResponseMatcher implements ResponseMatcher {
 
         @Override
-        public boolean match(WaitingAction waitingAction, IncomingMessage incomingMessage) {
-            return waitingAction.getMessage().getEvent()
-                    .equals(incomingMessage.getMessage().getEvent());
+        public boolean match(ProtocolAction waitingAction, ProtocolAction incomingAction) {
+            return waitingAction.getEvent().equals(incomingAction.getEvent())
+                    && waitingAction.getMetadata(KEY_ID).equals(incomingAction.getMetadata(KEY_ID));
         }
     }
 
